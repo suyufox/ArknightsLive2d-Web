@@ -16,7 +16,7 @@ let skeletonRenderer;
 let lastFrameTime;
 let spineboy;
 
-let dir = "models/2025_shu_nian#11/";
+let dir = "Ark-Models/models/2025_shu_nian#11/";
 let skelFile = "build_char_2025_shu_nian#11.skel";
 let atlasFile = "build_char_2025_shu_nian#11.atlas";
 
