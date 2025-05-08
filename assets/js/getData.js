@@ -7,9 +7,17 @@ export const DATA_FILTER_TYPE = {
     DynIllust: "DynIllust",
 };
 
+const PATH_MAP = {
+    // MODELS_DATA: "./assets/models_data.json",
+    MODELS_DATA: "../Ark-Models/models_data.json",
+    MODELS: "models",
+    MODELS_ENEMIES: "models_enemies",
+    MODELS_ILLUST: "models_illust",
+};
+
 // 渲染筛选数据
 export const renderMemberSelect = async (DATA_FILTER_TYPE = []) => {
-    const resData = await fetch("./assets/models_data.json").then((res) => res.json());
+    const resData = await fetch(PATH_MAP.MODELS_DATA).then((res) => res.json());
     const data = [];
     for (let key in resData.data) {
         const item = resData.data[key];
@@ -39,20 +47,20 @@ export const renderMemberSelect = async (DATA_FILTER_TYPE = []) => {
         let prefix = "";
         switch (item.type) {
             case "Operator":
-                prefix = "models";
+                prefix = PATH_MAP.MODELS;
                 break;
             case "Enemy":
-                prefix = "models_enemies";
+                prefix = PATH_MAP.MODELS_ENEMIES;
                 break;
             case "DynIllust":
-                prefix = "models_illust";
+                prefix = PATH_MAP.MODELS_ILLUST;
                 break;
 
             default:
                 break;
         }
         window.init({
-            dir: `${prefix}/${item.dir}/`,
+            dir: `Ark-Models/${prefix}/${item.dir}/`,
             atlasFile: item.assets[".atlas"],
             skelFile: item.assets[".skel"],
         });
