@@ -8,7 +8,8 @@ export const DATA_FILTER_TYPE = {
 };
 
 const PATH_MAP = {
-    MODELS_DATA: "./assets/models_data.json",
+    // MODELS_DATA: "./assets/models_data.json",
+    MODELS_DATA: "../Ark-Models/models_data.json",
     MODELS: "models",
     MODELS_ENEMIES: "models_enemies",
     MODELS_ILLUST: "models_illust",
@@ -59,7 +60,7 @@ export const renderMemberSelect = async (DATA_FILTER_TYPE = []) => {
                 break;
         }
         window.init({
-            dir: `${prefix}/${item.dir}/`,
+            dir: `Ark-Models/${prefix}/${item.dir}/`,
             atlasFile: item.assets[".atlas"],
             skelFile: item.assets[".skel"],
         });
