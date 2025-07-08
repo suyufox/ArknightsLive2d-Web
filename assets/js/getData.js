@@ -16,7 +16,7 @@ const PATH_MAP = {
 };
 
 // 渲染筛选数据
-export const renderMemberSelect = async (DATA_FILTER_TYPE = []) => {
+export const renderMemberSelect = async (DATA_FILTER_TYPE = [], className = "#select") => {
     const resData = await fetch(PATH_MAP.MODELS_DATA).then((res) => res.json());
     const data = [];
     for (let key in resData.data) {
@@ -35,7 +35,7 @@ export const renderMemberSelect = async (DATA_FILTER_TYPE = []) => {
             });
         }
     }
-    const selectDom = document.querySelector("#select");
+    const selectDom = document.querySelector(className);
     selectDom.options = data.map((item) => ({
         label: item.name,
         value: JSON.stringify(item),
