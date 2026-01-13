@@ -28,8 +28,11 @@ let positionBaseValY = 1;
 let dpr = window.devicePixelRatio;
 // 额外超采样倍率：仅提升 canvas 后备缓冲分辨率，不改变视觉尺寸（默认温和一点）
 let supersample = 1.25;
-// 视野缩放：控制“视觉大小”。默认用 dpr，让高分屏下视觉尺寸更接近旧版（不至于过大）。
+// 视野缩放：控制"视觉大小"。默认用 dpr，让高分屏下视觉尺寸更接近旧版（不至于过大）。
 let viewScale;
+
+// 是否自动缩放以完整显示模型（皮肤立绘专用）。默认 false 保持首页逻辑不变。
+let fitToCanvas = false;
 
 let AnimaName = "";
 
@@ -48,6 +51,7 @@ export function init(params) {
         dpr = params.dpr || dpr;
         supersample = params.supersample ?? supersample;
         viewScale = params.viewScale ?? viewScale;
+        fitToCanvas = params.fitToCanvas ?? fitToCanvas;
         AnimaName = params.animaName;
     }
     // Setup canvas and WebGL context. We pass alpha: false to canvas.getContext() so we don't use premultiplied alpha when
@@ -227,14 +231,31 @@ function updateMvpToCenter(skeleton) {
     const cw = canvas.clientWidth;
     const ch = canvas.clientHeight;
 
-    // 以“当前帧”包围盒中心为准，保证模型始终居中（动画不漂）
+    // 以"当前帧"包围盒中心为准，保证模型始终居中（动画不漂）
     const offset = new spine.Vector2();
     const size = new spine.Vector2();
     skeleton.getBounds(offset, size, []);
     const centerX = offset.x + size.x / 2;
     const centerY = offset.y + size.y / 2;
 
-    // 保持历史语义：positionBaseValX/Y 只影响“中心点平移缩放”（不影响模型大小）
+    // fitToCanvas 模式：自动缩放以完整显示模型（皮肤立绘专用）
+    if (fitToCanvas) {
+        // 计算需要多大的视野才能完整显示包围盒
+        const boundsW = size.x || 1;
+        const boundsH = size.y || 1;
+        // 按宽高比决定缩放：取较小的缩放比保证完整显示
+        const scaleX = cw / boundsW;
+        const scaleY = ch / boundsH;
+        const fitScale = Math.min(scaleX, scaleY);
+        // 视野大小 = 包围盒大小 / fitScale（反过来算：让包围盒刚好填满画布短边）
+        const worldW = cw / fitScale;
+        const worldH = ch / fitScale;
+        // 中心对齐包围盒中心
+        mvp.ortho2d(centerX - worldW / 2, centerY - worldH / 2, worldW, worldH);
+        return;
+    }
+
+    // 保持历史语义：positionBaseValX/Y 只影响"中心点平移缩放"（不影响模型大小）
     // 之前代码是 centerX / base - canvasWidth/2，因此默认 20 不会把模型缩小，只是改变居中参考点
     const baseX = Number(positionBaseValX) || 1;
     const baseY = Number(positionBaseValY) || 1;
